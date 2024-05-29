@@ -33,10 +33,10 @@ class SmsController < ApplicationController
 
   def increment_sms_count(from)
     count = $redis.incr("#{from}_count")
-    $redis.expire("#{from}_count", 24.hours) if count == 1
+    $redis.expire("#{from}_count", (ENV['OUTBOUND_LIMIT'] || 24).hours) if count == 1
   end
 
   def cache_for_inbound(from, to)
-    $redis.set("#{from}_#{to}", true, ex: 4.hours)
+    $redis.set("#{from}_#{to}", true, ex: (ENV['INBOUND_EXPIRY'] || 4).hours)
   end
 end
